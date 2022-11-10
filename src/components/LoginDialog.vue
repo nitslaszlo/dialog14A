@@ -1,14 +1,22 @@
 <script setup lang="ts">
-  import { reactive } from "vue";
+  import { useUsersStore } from "src/store/usersStore";
+  import { reactive, computed } from "vue";
   interface IProps {
     email?: string;
     password?: string;
+    showDialog: boolean;
   }
 
   const props = withDefaults(defineProps<IProps>(), {
     email: "student001@jedlik.eu",
     password: "student001",
+    showDialog: true,
   });
+
+  const emit = defineEmits<{
+    // eslint-disable-next-line no-unused-vars
+    (e: "close-login-dialog"): void;
+  }>();
 
   interface IReactiveData {
     email: string;
@@ -19,12 +27,44 @@
     email: props.email,
     password: props.password,
   });
+
+  const usersStore = useUsersStore();
+
+  const anyLoggedUser = computed(() => (usersStore.getLoggedUser ? true : false));
+
+  function LoginLogout() {
+    if (anyLoggedUser.value) {
+      usersStore.logOut();
+    } else {
+      usersStore.loginUser({
+        email: r.email,
+        password: r.password,
+      });
+    }
+  }
 </script>
 
 <template>
-  <q-dialog>
-    <q-card>
-      <q-input v-model="r.email" />
+  <q-dialog v-model="$props.showDialog" transition-hide="rotate" transition-show="rotate">
+    <q-card class="q-pa-lg" style="width: 100%">
+      <q-form>
+        <q-card-section>
+          <q-input v-model="r.email" :disable="anyLoggedUser" label="E_mail address" />
+        </q-card-section>
+        <q-card-section v-if="!anyLoggedUser">
+          <q-input v-model="r.password" label="Password" type="password" />
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn
+            class="q-mr-md"
+            color="green"
+            :label="anyLoggedUser ? 'Logout' : 'Login'"
+            no-caps
+            @click="LoginLogout()"
+          />
+          <q-btn color="red" label="Close dialog" no-caps @click="emit('close-login-dialog')" />
+        </q-card-actions>
+      </q-form>
     </q-card>
   </q-dialog>
 </template>

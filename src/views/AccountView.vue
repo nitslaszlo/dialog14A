@@ -33,7 +33,7 @@
         no-caps
       />
       <!-- LoginDialog saját komponens helye -->
-      <LoginDialog email="alma@jedlik.eu" password="körte" />
+      <LoginDialog :show-dialog="r.showDialog" @close-login-dialog="r.showDialog = false" />
     </div>
   </q-page>
 </template>
