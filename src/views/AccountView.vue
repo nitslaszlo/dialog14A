@@ -1,17 +1,19 @@
 <script setup lang="ts">
-  import { computed, reactive } from "vue";
+  import { computed } from "vue";
   import { useUsersStore } from "../store/usersStore";
+  import { useAppStore } from "../store/appStore";
   import LoginDialog from "../components/LoginDialog.vue";
 
   const usersStore = useUsersStore();
+  const appStore = useAppStore();
 
-  interface IReactiveData {
-    showDialog: boolean;
-  }
+  // interface IReactiveData {
+  //   showDialog: boolean;
+  // }
 
-  const r = reactive<IReactiveData>({
-    showDialog: false,
-  });
+  // const r = reactive<IReactiveData>({
+  //   showDialog: false,
+  // });
 
   const anyLoggedUser = computed(() => (usersStore.getLoggedUser ? true : false));
 </script>
@@ -24,7 +26,7 @@
         color="info"
         :label="anyLoggedUser ? 'Show logout dialog' : 'Show login dialog'"
         no-caps
-        @click="r.showDialog = true"
+        @click="appStore.showLoginDialog = true"
       />
       <q-btn
         class="shadow-10"
@@ -33,7 +35,7 @@
         no-caps
       />
       <!-- LoginDialog saját komponens helye -->
-      <LoginDialog :show-dialog="r.showDialog" @close-login-dialog="r.showDialog = false" />
+      <LoginDialog />
     </div>
   </q-page>
 </template>

@@ -1,22 +1,21 @@
 <script setup lang="ts">
+  import { useAppStore } from "src/store/appStore";
   import { useUsersStore } from "src/store/usersStore";
   import { reactive, computed } from "vue";
   interface IProps {
     email?: string;
     password?: string;
-    showDialog: boolean;
   }
 
   const props = withDefaults(defineProps<IProps>(), {
     email: "student001@jedlik.eu",
     password: "student001",
-    showDialog: true,
   });
 
-  const emit = defineEmits<{
-    // eslint-disable-next-line no-unused-vars
-    (e: "close-login-dialog"): void;
-  }>();
+  // const emit = defineEmits<{
+  //   // eslint-disable-next-line no-unused-vars
+  //   (e: "close-login-dialog"): void;
+  // }>();
 
   interface IReactiveData {
     email: string;
@@ -29,6 +28,7 @@
   });
 
   const usersStore = useUsersStore();
+  const appStore = useAppStore();
 
   const anyLoggedUser = computed(() => (usersStore.getLoggedUser ? true : false));
 
@@ -45,7 +45,13 @@
 </script>
 
 <template>
-  <q-dialog v-model="$props.showDialog" transition-hide="rotate" transition-show="rotate">
+  <q-dialog
+    v-model="appStore.showLoginDialog"
+    full-width
+    persistent
+    transition-hide="rotate"
+    transition-show="rotate"
+  >
     <q-card class="q-pa-lg" style="width: 100%">
       <q-form>
         <q-card-section>
@@ -62,7 +68,12 @@
             no-caps
             @click="LoginLogout()"
           />
-          <q-btn color="red" label="Close dialog" no-caps @click="emit('close-login-dialog')" />
+          <q-btn
+            color="red"
+            label="Close dialog"
+            no-caps
+            @click="appStore.showLoginDialog = false"
+          />
         </q-card-actions>
       </q-form>
     </q-card>
