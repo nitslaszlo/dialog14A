@@ -1,31 +1,32 @@
 <script setup lang="ts">
   import { useAppStore } from "src/store/appStore";
   import { useUsersStore } from "src/store/usersStore";
-  import { reactive, computed } from "vue";
-  interface IProps {
-    email?: string;
-    password?: string;
-  }
+  import { computed } from "vue";
 
-  const props = withDefaults(defineProps<IProps>(), {
-    email: "student001@jedlik.eu",
-    password: "student001",
-  });
+  // interface IProps {
+  //   email?: string;
+  //   password?: string;
+  // }
+
+  // const props = withDefaults(defineProps<IProps>(), {
+  //   email: "student001@jedlik.eu",
+  //   password: "student001",
+  // });
 
   // const emit = defineEmits<{
   //   // eslint-disable-next-line no-unused-vars
   //   (e: "close-login-dialog"): void;
   // }>();
 
-  interface IReactiveData {
-    email: string;
-    password: string;
-  }
+  // interface IReactiveData {
+  //   email: string;
+  //   password: string;
+  // }
 
-  const r = reactive<IReactiveData>({
-    email: props.email,
-    password: props.password,
-  });
+  // const r = reactive<IReactiveData>({
+  //   email: props.email,
+  //   password: props.password,
+  // });
 
   const usersStore = useUsersStore();
   const appStore = useAppStore();
@@ -37,8 +38,8 @@
       usersStore.logOut();
     } else {
       usersStore.loginUser({
-        email: r.email,
-        password: r.password,
+        email: appStore.email,
+        password: appStore.password,
       });
     }
   }
@@ -47,34 +48,40 @@
 <template>
   <q-dialog
     v-model="appStore.showLoginDialog"
-    full-width
+    :full-width="$q.screen.lt.sm"
     persistent
     transition-hide="rotate"
     transition-show="rotate"
   >
     <q-card class="q-pa-lg" style="width: 100%">
       <q-form>
-        <q-card-section>
-          <q-input v-model="r.email" :disable="anyLoggedUser" label="E_mail address" />
-        </q-card-section>
-        <q-card-section v-if="!anyLoggedUser">
-          <q-input v-model="r.password" label="Password" type="password" />
-        </q-card-section>
-        <q-card-actions align="center">
-          <q-btn
-            class="q-mr-md"
-            color="green"
-            :label="anyLoggedUser ? 'Logout' : 'Login'"
-            no-caps
-            @click="LoginLogout()"
-          />
-          <q-btn
-            color="red"
-            label="Close dialog"
-            no-caps
-            @click="appStore.showLoginDialog = false"
-          />
-        </q-card-actions>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6">
+            <q-card-section>
+              <q-input v-model="appStore.email" :disable="anyLoggedUser" label="E_mail address" />
+            </q-card-section>
+            <q-card-section v-if="!anyLoggedUser">
+              <q-input v-model="appStore.password" label="Password" type="password" />
+            </q-card-section>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <q-card-actions class="flex-center" style="height: 100%">
+              <q-btn
+                class="q-mr-md"
+                color="green"
+                :label="anyLoggedUser ? 'Logout' : 'Login'"
+                no-caps
+                @click="LoginLogout()"
+              />
+              <q-btn
+                color="red"
+                label="Close dialog"
+                no-caps
+                @click="appStore.showLoginDialog = false"
+              />
+            </q-card-actions>
+          </div>
+        </div>
       </q-form>
     </q-card>
   </q-dialog>
